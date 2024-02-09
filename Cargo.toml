@@ -4,5 +4,42 @@ version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
+anyhow = { version = "1.0.79", features = ["backtrace"] }
+clap = { version = "4.4.18", features = ["env", "string", "unicode", "derive"] }
+color-eyre = "0.6.2"
+serde = { version = "1.0.196", features = ["derive"] }
+sqlx = { version = "0.7.3", features = ["sqlite", "macros", "runtime-tokio", "tls-rustls"] }
+tokio = { version = "1.36.0", features = ["full"] }
+
+
+[dev-dependencies]
+clap = { version = "4.4.18", features = ["debug", "env", "string", "unicode", "derive"] }
+rstest = "0.18.2" # Testing framework including support for fixtures
+
+# See the complete list of rustdoc lints at https://doc.rust-lang.org/rustdoc/lints.html
+[lints.rustdoc]
+broken_intra_doc_links = "deny" # Ensure that all intra-doc links point to valid items
+missing_docs = "forbid" # Ensure that all public items have documentation
+invalid_rust_codeblocks = "deny" # Ensure that all code blocks in the documentation are valid Rust code
+redundant_explicit_links = "deny" # Ensure that all explicit links are necessary
+
+## Profile settings
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/profiles.html
+
+# Set the optimization options for the development profile
+[profile.dev]
+opt-level = 1 # Minimal optimization
+debug = true # Generate debug information including debug information for the dependency crates
+
+# Override the options for the `sqlx-macros` package in the development profile
+[profile.dev.package.sqlx-macros]
+opt-level = 3
+
+# Set the optimization options for the release profile
+[profile.release]
+opt-level = 'z' # Optimize for size
+lto = true # Enable link-time optimization
+codegen-units = 1 # Compile the whole crate at once
+panic = "abort" # Abort on panic
+strip = "symbols" # Strip debug symbols
